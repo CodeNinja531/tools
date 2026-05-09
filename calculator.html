@@ -3,27 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python in HTML</title>
-    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
-    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+    <title>Scientific Calculator - Formula 01</title>
+    <style>
+        body { background-color: #2c3e50; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        
+        /* Calculator Body */
+        .calculator { background-color: #3d4043; padding: 20px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 340px; border: 2px solid #555; }
+        
+        /* Screen */
+        .screen { background-color: #9ead86; color: #1a1a1a; padding: 10px; border-radius: 5px; text-align: right; margin-bottom: 20px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); }
+        #display { font-family: 'Courier New', Courier, monospace; font-size: 1.5rem; min-height: 30px; overflow: hidden; }
+        #result { font-family: 'Courier New', Courier, monospace; font-size: 1.2rem; height: 25px; color: #333; }
+
+        /* Buttons Grid */
+        .buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        
+        button { padding: 15px; font-size: 1rem; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: bold; }
+        
+        /* Casio Style Colors */
+        .btn-num { background-color: #ebebeb; color: #333; }
+        .btn-op { background-color: #505050; color: white; }
+        .btn-func { background-color: #333; color: #76ff03; font-size: 0.8rem; }
+        .btn-ac { background-color: #d32f2f; color: white; }
+        .btn-formula { background-color: #ff9800; color: black; grid-column: span 2; }
+        
+        button:hover { opacity: 0.8; transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+    </style>
 </head>
 <body>
 
-    <h1>My First Python HTML Page</h1>
-    <div id="output"></div>
+<div class="calculator">
+    <div class="screen">
+        <div id="display">0</div>
+        <div id="result"></div>
+    </div>
 
-    <script type="py">
-        from pyscript import display
-        
-        # This is real Python code
-        name = "World"
-        message = f"Hello {name}, this is Python running in your browser!"
-        
-        # Display output to the specific HTML element with id="output"
-        display(message, target="output")
-        
-        print("This prints to the browser console (F12)")
-    </script>
+    <div class="buttons">
+        <button class="btn-func" onclick="mathFunc('sin')">sin</button>
+        <button class="btn-func" onclick="mathFunc('cos')">cos</button>
+        <button class="btn-func" onclick="mathFunc('tan')">tan</button>
+        <button class="btn-ac" onclick="clearAll()">AC</button>
+
+        <button class="btn-func" onclick="mathFunc('sqrt')">√</button>
+        <button class="btn-func" onclick="mathFunc('pow')">x²</button>
+        <button class="btn-func" onclick="mathFunc('log')">log</button>
+        <button class="btn-op" onclick="appendToDisplay('/')">÷</button>
+
+        <button class="btn-num" onclick="appendToDisplay('7')">7</button>
+        <button class="btn-num" onclick="appendToDisplay('8')">8</button>
+        <button class="btn-num" onclick="appendToDisplay('9')">9</button>
+        <button class="btn-op" onclick="appendToDisplay('*')">×</button>
+
+        <button class="btn-num" onclick="appendToDisplay('4')">4</button>
+        <button class="btn-num" onclick="appendToDisplay('5')">5</button>
+        <button class="btn-num" onclick="appendToDisplay('6')">6</button>
+        <button class="btn-op" onclick="appendToDisplay('-')">-</button>
+
+        <button class="btn-num" onclick="appendToDisplay('1')">1</button>
+        <button class="btn-num" onclick="appendToDisplay('2')">2</button>
+        <button class="btn-num" onclick="appendToDisplay('3')">3</button>
+        <button class="btn-op" onclick="appendToDisplay('+')">+</button>
+
+        <button class="btn-num" onclick="appendToDisplay('0')">0</button>
+        <button class="btn-num" onclick="appendToDisplay('.')">.</button>
+        <button class="btn-num" onclick="mathFunc('pi')">π</button>
+        <button class="btn-op" style="background-color: #2196F3;" onclick="calculate()">=</button>
+
+        <button class="btn-formula" onclick="solveQuadratic()">Formula 01: Quadratic</button>
+        <button class="btn-func" style="grid-column: span 2;" onclick="backspace()">DEL</button>
+    </div>
+</div>
+
+<script>
+    let currentInput = "0";
+
+    function updateDisplay() {
+        document.getElementById('display').innerText = currentInput;
+    }
+
+    function appendToDisplay(val) {
+        if (currentInput === "0") currentInput = val;
+        else currentInput += val;
+        updateDisplay();
+    }
+
+    function clearAll() {
+        currentInput = "0";
+        document.getElementById('result').innerText = "";
+        updateDisplay();
+    }
+
+    function backspace() {
+        currentInput = currentInput.slice(0, -1);
+        if (currentInput === "") currentInput = "0";
+        updateDisplay();
+    }
+
+    function calculate() {
+        try {
+            // Basic eval for demo purposes
+            let formattedInput = currentInput.replace('×', '*').replace('÷', '/');
+            let res = eval(formattedInput);
+            document.getElementById('result').innerText = "= " + res;
+        } catch (e) {
+            document.getElementById('result').innerText = "Error";
+        }
+    }
+
+    function mathFunc(type) {
+        let val = parseFloat(currentInput);
+        switch(type) {
+            case 'sin': currentInput = Math.sin(val).toFixed(4); break;
+            case 'cos': currentInput = Math.cos(val).toFixed(4); break;
+            case 'tan': currentInput = Math.tan(val).toFixed(4); break;
+            case 'sqrt': currentInput = Math.sqrt(val).toFixed(4); break;
+            case 'pow': currentInput = Math.pow(val, 2).toString(); break;
+            case 'log': currentInput = Math.log10(val).toFixed(4); break;
+            case 'pi': currentInput = Math.PI.toFixed(4); break;
+        }
+        updateDisplay();
+    }
+
+    // Formula 01: Quadratic Solver
+    function solveQuadratic() {
+        const input = prompt("Enter coefficients a, b, c (separated by commas):", "1,-5,6");
+        if (input) {
+            const [a, b, c] = input.split(',').map(Number);
+            const discriminant = (b * b) - (4 * a * c);
+            
+            if (discriminant > 0) {
+                let x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+                let x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+                document.getElementById('result').innerText = `x1=${x1.toFixed(2)}, x2=${x2.toFixed(2)}`;
+            } else if (discriminant === 0) {
+                let x = -b / (2 * a);
+                document.getElementById('result').innerText = `x=${x.toFixed(2)}`;
+            } else {
+                document.getElementById('result').innerText = "No Real Roots";
+            }
+        }
+    }
+</script>
 
 </body>
 </html>
